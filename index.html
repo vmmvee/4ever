@@ -156,6 +156,14 @@
       return x >= eye.left && x <= eye.right && y >= eye.top && y <= eye.bottom;
     }
 
+    function getTouchCoordinates(e) {
+      if (e.touches) {
+        return [e.touches[0].clientX, e.touches[0].clientY];
+      } else {
+        return [e.clientX, e.clientY];
+      }
+    }
+
     canvas.addEventListener("mousedown", (e) => {
       if (!isInEyeZone(e.clientX, e.clientY)) {
         drawing = true;
@@ -168,8 +176,9 @@
 
     canvas.addEventListener("mousemove", (e) => {
       if (drawing && !isInEyeZone(e.clientX, e.clientY)) {
-        path.push([e.clientX, e.clientY]);
-        ctx.lineTo(e.clientX, e.clientY);
+        const [x, y] = getTouchCoordinates(e);
+        path.push([x, y]);
+        ctx.lineTo(x, y);
         ctx.strokeStyle = "#ff80d5";
         ctx.lineWidth = 5;
         ctx.stroke();
@@ -177,6 +186,42 @@
     });
 
     canvas.addEventListener("mouseup", () => {
+      drawing = false;
+      if (path.length > 5) {
+        const result = recognizer.recognize(resample(path, 32));
+        if (result === "D") {
+          window.location.href = "mainpage.html";
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+    });
+
+    // دعم لللمس
+    canvas.addEventListener("touchstart", (e) => {
+      const [x, y] = getTouchCoordinates(e);
+      if (!isInEyeZone(x, y)) {
+        drawing = true;
+        path = [[x, y]];
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+      }
+    });
+
+    canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault(); // لمنع التمرير أثناء الرسم
+      if (drawing) {
+        const [x, y] = getTouchCoordinates(e);
+        path.push([x, y]);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = "#ff80d5";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+      }
+    });
+
+    canvas.addEventListener("touchend", () => {
       drawing = false;
       if (path.length > 5) {
         const result = recognizer.recognize(resample(path, 32));
@@ -237,3 +282,4 @@
 
 </body>
 </html>
+
