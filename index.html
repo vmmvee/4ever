@@ -84,25 +84,21 @@
 </head>
 <body>
 
-  <!-- شاشة البداية -->
   <div class="centered fade show" id="start-screen">
     <img src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-18_02-19-49-246.jpg" class="background-img" alt="Background"/>
     <button class="start-button" onclick="startSite()"></button>
   </div>
 
-  <!-- المحتوى الرئيسي -->
   <div class="main-content fade" id="main-content">
     <div class="input-container">
       <img id="eye-img" src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-20_17-28-36-831%5B1%5D.png" alt="Eye" class="logo"/>
     </div>
   </div>
 
-  <!-- الصوت -->
   <audio id="audio" loop>
     <source src="https://www.dropbox.com/scl/fi/li3f5xmoh3qa7r3nkgehd/A-new-song-by-me-_D-originalsound-music-piano-space-animated-pixel-pixelart-originalmusic.mp3?rlkey=t3q398qcrgeenulc3yiguyzjr&st=53mayfgb&raw=1" type="audio/mp3">
   </audio>
 
-  <!-- مكتبة التعرف على الرسم -->
   <script>
     class DollarRecognizer {
       constructor() {
@@ -140,7 +136,6 @@
     const recognizer = new DollarRecognizer();
   </script>
 
-  <!-- رسم وتفاعل -->
   <script>
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
@@ -156,50 +151,11 @@
       return x >= eye.left && x <= eye.right && y >= eye.top && y <= eye.bottom;
     }
 
-    function getTouchCoordinates(e) {
-      if (e.touches) {
-        return [e.touches[0].clientX, e.touches[0].clientY];
-      } else {
-        return [e.clientX, e.clientY];
-      }
+    function getTouchPos(touch) {
+      return [touch.clientX, touch.clientY];
     }
 
-    canvas.addEventListener("mousedown", (e) => {
-      if (!isInEyeZone(e.clientX, e.clientY)) {
-        drawing = true;
-        path = [[e.clientX, e.clientY]];
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.beginPath();
-        ctx.moveTo(e.clientX, e.clientY);
-      }
-    });
-
-    canvas.addEventListener("mousemove", (e) => {
-      if (drawing && !isInEyeZone(e.clientX, e.clientY)) {
-        const [x, y] = getTouchCoordinates(e);
-        path.push([x, y]);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "#ff80d5";
-        ctx.lineWidth = 5;
-        ctx.stroke();
-      }
-    });
-
-    canvas.addEventListener("mouseup", () => {
-      drawing = false;
-      if (path.length > 5) {
-        const result = recognizer.recognize(resample(path, 32));
-        if (result === "D") {
-          window.location.href = "mainpage.html";
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-    });
-
-    // دعم لللمس
-    canvas.addEventListener("touchstart", (e) => {
-      const [x, y] = getTouchCoordinates(e);
+    function startDraw(x, y) {
       if (!isInEyeZone(x, y)) {
         drawing = true;
         path = [[x, y]];
@@ -207,21 +163,19 @@
         ctx.beginPath();
         ctx.moveTo(x, y);
       }
-    });
+    }
 
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault(); // لمنع التمرير أثناء الرسم
-      if (drawing) {
-        const [x, y] = getTouchCoordinates(e);
+    function moveDraw(x, y) {
+      if (drawing && !isInEyeZone(x, y)) {
         path.push([x, y]);
         ctx.lineTo(x, y);
         ctx.strokeStyle = "#ff80d5";
         ctx.lineWidth = 5;
         ctx.stroke();
       }
-    });
+    }
 
-    canvas.addEventListener("touchend", () => {
+    function endDraw() {
       drawing = false;
       if (path.length > 5) {
         const result = recognizer.recognize(resample(path, 32));
@@ -231,7 +185,25 @@
           ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
       }
+    }
+
+    // دعم الماوس
+    canvas.addEventListener("mousedown", (e) => startDraw(e.clientX, e.clientY));
+    canvas.addEventListener("mousemove", (e) => moveDraw(e.clientX, e.clientY));
+    canvas.addEventListener("mouseup", endDraw);
+
+    // دعم اللمس
+    canvas.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      startDraw(touch.clientX, touch.clientY);
     });
+
+    canvas.addEventListener("touchmove", (e) => {
+      const touch = e.touches[0];
+      moveDraw(touch.clientX, touch.clientY);
+    });
+
+    canvas.addEventListener("touchend", endDraw);
 
     function resample(path, n) {
       const I = pathLength(path) / (n - 1);
@@ -282,4 +254,3 @@
 
 </body>
 </html>
-
