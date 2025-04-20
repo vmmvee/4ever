@@ -49,82 +49,6 @@
       z-index: 10;
     }
 
-    .main-content {
-      display: none;
-      background: url('https://i.pinimg.com/originals/5e/b1/7c/5eb17c4f17211055c1b9be88c4703953.gif') no-repeat center center fixed;
-      background-size: cover;
-      height: 100vh;
-      width: 100vw;
-      color: white;
-    }
-
-    .input-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .logo {
-      margin-bottom: 40px;
-      margin-top: -160px; /* رفع الصورة أكثر */
-      width: 100%;
-      max-width: 750px;
-      animation: fadeIn 1.5s ease;
-    }
-
-    .input-boxes {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-      animation: fadeIn 2s ease;
-    }
-
-    input {
-      width: 50px;
-      height: 50px;
-      font-size: 2rem;
-      text-align: center;
-      border: 2px solid #8000aa;
-      background-color: black;
-      color: #ffe6f2;
-      border-radius: 5px;
-      font-family: monospace;
-      transition: box-shadow 0.3s ease;
-    }
-
-    input:focus {
-      outline: none;
-      box-shadow: 0 0 5px #d57bff;
-    }
-
-    .error-img {
-      margin-top: 20px;
-      width: 120px;
-      height: auto;
-      display: none;
-      animation: fadeIn 1s ease;
-    }
-
-    .shake {
-      animation: shake 0.4s;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
     .background-img {
       position: absolute;
       width: 100%;
@@ -142,77 +66,16 @@
     <button class="start-button" onclick="startSite()"></button>
   </div>
 
-  <!-- المحتوى الرئيسي -->
-  <div class="main-content fade" id="main-content">
-    <div class="input-container">
-      <img src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-18_03-12-06-651.png" alt="Enter Code" class="logo"/>
-
-      <div class="input-boxes" id="input-boxes">
-        <input type="tel" maxlength="1" id="input1" oninput="handleInput(this, 1)" />
-        <input type="tel" maxlength="1" id="input2" oninput="handleInput(this, 2)" />
-        <input type="tel" maxlength="1" id="input3" oninput="handleInput(this, 3)" />
-        <input type="tel" maxlength="1" id="input4" oninput="handleInput(this, 4)" />
-      </div>
-
-      <img src="https://see.fontimg.com/api/rf5/R90Dv/ZTA3MDc1NmE0NzIwNGFjYjkyMWUwMzNlOGMxMzA2ZGEudHRm/SW5jb3JyZWN0IGNvZGUhIA/home-video-bold.png?r=dw&h=53&w=1250&fg=000000&bg=AE0000&s=42" class="error-img" id="error-img" alt="Incorrect code!" />
-    </div>
-  </div>
-
   <!-- الصوت -->
   <audio id="audio" loop>
     <source src="https://www.dropbox.com/scl/fi/li3f5xmoh3qa7r3nkgehd/A-new-song-by-me-_D-originalsound-music-piano-space-animated-pixel-pixelart-originalmusic.mp3?rlkey=t3q398qcrgeenulc3yiguyzjr&st=53mayfgb&raw=1" type="audio/mp3">
   </audio>
 
   <script>
-    const values = ["", "", "", ""];
-
     function startSite() {
-      const startScreen = document.getElementById("start-screen");
-      const mainContent = document.getElementById("main-content");
       const audio = document.getElementById("audio");
-
-      startScreen.classList.remove("show");
-      setTimeout(() => {
-        startScreen.style.display = "none";
-        mainContent.style.display = "block";
-        requestAnimationFrame(() => mainContent.classList.add("show"));
-      }, 1000);
-
       audio.play();
-    }
-
-    function handleInput(el, index) {
-      const value = el.value.replace(/[^0-9]/g, '');
-      if (value.length === 1) {
-        values[index - 1] = value;
-        el.value = "*";
-        if (index < 4) {
-          document.getElementById('input' + (index + 1)).focus();
-        } else {
-          checkPassword();
-        }
-      } else {
-        values[index - 1] = "";
-      }
-    }
-
-    function checkPassword() {
-      const code = values.join('');
-      const errorImg = document.getElementById('error-img');
-      const inputBoxes = document.getElementById('input-boxes');
-
-      if (code === "2014") {
-        window.location.href = "mainpage.html";
-      } else {
-        errorImg.style.display = "block";
-        inputBoxes.classList.add("shake");
-        setTimeout(() => inputBoxes.classList.remove("shake"), 400);
-        values.fill("");
-        for (let i = 1; i <= 4; i++) {
-          document.getElementById('input' + i).value = "";
-        }
-        document.getElementById('input1').focus();
-      }
+      window.location.href = "mainpage.html";
     }
   </script>
 
