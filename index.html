@@ -1,17 +1,29 @@
-<!DOCTYPE html>
+احفظ الكوده ده عندك عشان هنعدل عليه بس اروح الحمام واجي <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Special Website for Dina</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Comic Sans MS', cursive, sans-serif;
       height: 100vh;
       background: black;
       overflow: hidden;
+    }
+
+    .fade {
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+
+    .fade.show {
+      opacity: 1;
     }
 
     .centered {
@@ -46,23 +58,71 @@
       color: white;
     }
 
+    .input-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100%;
+    }
+
     .logo {
       margin-bottom: 40px;
-      margin-top: -160px;
+      margin-top: -160px; /* رفع الصورة أكثر */
       width: 100%;
       max-width: 750px;
       animation: fadeIn 1.5s ease;
-      position: relative;
-      z-index: 5;
     }
 
-    .fade {
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
+    .input-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      animation: fadeIn 2s ease;
     }
 
-    .fade.show {
-      opacity: 1;
+    input {
+      width: 50px;
+      height: 50px;
+      font-size: 2rem;
+      text-align: center;
+      border: 2px solid #8000aa;
+      background-color: black;
+      color: #ffe6f2;
+      border-radius: 5px;
+      font-family: monospace;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      box-shadow: 0 0 5px #d57bff;
+    }
+
+    .error-img {
+      margin-top: 20px;
+      width: 120px;
+      height: auto;
+      display: none;
+      animation: fadeIn 1s ease;
+    }
+
+    .shake {
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .background-img {
@@ -72,169 +132,39 @@
       object-fit: cover;
       z-index: 0;
     }
-
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 4;
-      pointer-events: auto;
-    }
   </style>
 </head>
 <body>
 
+  <!-- شاشة البداية -->
   <div class="centered fade show" id="start-screen">
     <img src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-18_02-19-49-246.jpg" class="background-img" alt="Background"/>
     <button class="start-button" onclick="startSite()"></button>
   </div>
 
+  <!-- المحتوى الرئيسي -->
   <div class="main-content fade" id="main-content">
     <div class="input-container">
-      <img id="eye-img" src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-20_17-28-36-831%5B1%5D.png" alt="Eye" class="logo"/>
+      <img src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-18_03-12-06-651.png" alt="Enter Code" class="logo"/>
+
+      <div class="input-boxes" id="input-boxes">
+        <input type="tel" maxlength="1" id="input1" oninput="handleInput(this, 1)" />
+        <input type="tel" maxlength="1" id="input2" oninput="handleInput(this, 2)" />
+        <input type="tel" maxlength="1" id="input3" oninput="handleInput(this, 3)" />
+        <input type="tel" maxlength="1" id="input4" oninput="handleInput(this, 4)" />
+      </div>
+
+      <img src="https://see.fontimg.com/api/rf5/R90Dv/ZTA3MDc1NmE0NzIwNGFjYjkyMWUwMzNlOGMxMzA2ZGEudHRm/SW5jb3JyZWN0IGNvZGUhIA/home-video-bold.png?r=dw&h=53&w=1250&fg=000000&bg=AE0000&s=42" class="error-img" id="error-img" alt="Incorrect code!" />
     </div>
   </div>
 
+  <!-- الصوت -->
   <audio id="audio" loop>
     <source src="https://www.dropbox.com/scl/fi/li3f5xmoh3qa7r3nkgehd/A-new-song-by-me-_D-originalsound-music-piano-space-animated-pixel-pixelart-originalmusic.mp3?rlkey=t3q398qcrgeenulc3yiguyzjr&st=53mayfgb&raw=1" type="audio/mp3">
   </audio>
 
   <script>
-    class DollarRecognizer {
-      constructor() {
-        this.templates = [];
-        this.addGesture("D", [[0,0],[0,50],[0,100],[25,100],[50,75],[50,25],[25,0],[0,0]]);
-      }
-
-      addGesture(name, points) {
-        this.templates.push({ name, points });
-      }
-
-      recognize(points) {
-        let minDistance = Infinity, matched = null;
-        for (const template of this.templates) {
-          const d = this.greedyMatch(points, template.points);
-          if (d < minDistance) {
-            minDistance = d;
-            matched = template.name;
-          }
-        }
-        return matched;
-      }
-
-      greedyMatch(a, b) {
-        let sum = 0;
-        for (let i = 0; i < Math.min(a.length, b.length); i++) {
-          const dx = a[i][0] - b[i][0];
-          const dy = a[i][1] - b[i][1];
-          sum += dx * dx + dy * dy;
-        }
-        return sum;
-      }
-    }
-
-    const recognizer = new DollarRecognizer();
-  </script>
-
-  <script>
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
-    let path = [];
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    document.body.appendChild(canvas);
-
-    function isInEyeZone(x, y) {
-      const eye = document.getElementById("eye-img").getBoundingClientRect();
-      return x >= eye.left && x <= eye.right && y >= eye.top && y <= eye.bottom;
-    }
-
-    function getTouchPos(touch) {
-      return [touch.clientX, touch.clientY];
-    }
-
-    function startDraw(x, y) {
-      if (!isInEyeZone(x, y)) {
-        drawing = true;
-        path = [[x, y]];
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-      }
-    }
-
-    function moveDraw(x, y) {
-      if (drawing && !isInEyeZone(x, y)) {
-        path.push([x, y]);
-        ctx.lineTo(x, y);
-        ctx.strokeStyle = "#ff80d5";
-        ctx.lineWidth = 5;
-        ctx.stroke();
-      }
-    }
-
-    function endDraw() {
-      drawing = false;
-      if (path.length > 5) {
-        const result = recognizer.recognize(resample(path, 32));
-        if (result === "D") {
-          window.location.href = "mainpage.html";
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-    }
-
-    // دعم الماوس
-    canvas.addEventListener("mousedown", (e) => startDraw(e.clientX, e.clientY));
-    canvas.addEventListener("mousemove", (e) => moveDraw(e.clientX, e.clientY));
-    canvas.addEventListener("mouseup", endDraw);
-
-    // دعم اللمس
-    canvas.addEventListener("touchstart", (e) => {
-      const touch = e.touches[0];
-      startDraw(touch.clientX, touch.clientY);
-    });
-
-    canvas.addEventListener("touchmove", (e) => {
-      const touch = e.touches[0];
-      moveDraw(touch.clientX, touch.clientY);
-    });
-
-    canvas.addEventListener("touchend", endDraw);
-
-    function resample(path, n) {
-      const I = pathLength(path) / (n - 1);
-      let D = 0, newPoints = [path[0]];
-      for (let i = 1; i < path.length; i++) {
-        const d = distance(path[i-1], path[i]);
-        if ((D + d) >= I) {
-          const qx = path[i-1][0] + ((I - D) / d) * (path[i][0] - path[i-1][0]);
-          const qy = path[i-1][1] + ((I - D) / d) * (path[i][1] - path[i-1][1]);
-          newPoints.push([qx, qy]);
-          path.splice(i, 0, [qx, qy]);
-          D = 0;
-        } else {
-          D += d;
-        }
-      }
-      while (newPoints.length < n) newPoints.push(path[path.length - 1]);
-      return newPoints;
-    }
-
-    function distance(a, b) {
-      return Math.hypot(a[0] - b[0], a[1] - b[1]);
-    }
-
-    function pathLength(pts) {
-      let d = 0;
-      for (let i = 1; i < pts.length; i++) {
-        d += distance(pts[i - 1], pts[i]);
-      }
-      return d;
-    }
+    const values = ["", "", "", ""];
 
     function startSite() {
       const startScreen = document.getElementById("start-screen");
@@ -250,7 +180,43 @@
 
       audio.play();
     }
+
+    function handleInput(el, index) {
+      const value = el.value.replace(/[^0-9]/g, '');
+      if (value.length === 1) {
+        values[index - 1] = value;
+        el.value = "*";
+        if (index < 4) {
+          document.getElementById('input' + (index + 1)).focus();
+        } else {
+          checkPassword();
+        }
+      } else {
+        values[index - 1] = "";
+      }
+    }
+
+    function checkPassword() {
+      const code = values.join('');
+      const errorImg = document.getElementById('error-img');
+      const inputBoxes = document.getElementById('input-boxes');
+
+      if (code === "2014") {
+        window.location.href = "mainpage.html";
+      } else {
+        errorImg.style.display = "block";
+        inputBoxes.classList.add("shake");
+        setTimeout(() => inputBoxes.classList.remove("shake"), 400);
+        values.fill("");
+        for (let i = 1; i <= 4; i++) {
+          document.getElementById('input' + i).value = "";
+        }
+        document.getElementById('input1').focus();
+      }
+    }
   </script>
 
 </body>
 </html>
+
+
