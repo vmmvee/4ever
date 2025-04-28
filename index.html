@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>  
 <html lang="en">
 <head>
@@ -147,6 +146,48 @@
       top: 10%;
       left: 3%;
     }
+
+    .center-button-1 {
+      position: absolute;
+      top: 40%;
+      left: 25%;
+      height: 40%;
+      width: 25%;
+      background: transparent;
+      border: none;
+      z-index: 3;
+      cursor: pointer;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .center-button-2 {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      height: 40%;
+      width: 25%;
+      background: transparent;
+      border: none;
+      z-index: 3;
+      cursor: pointer;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .under-logo-img {
+      margin-top: 30px;
+      width: 100%;
+      max-width: 500px;
+      animation: fadeIn 1.5s ease;
+      animation-delay: 1s;
+      animation-fill-mode: both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -158,9 +199,12 @@
   <div class="main-content fade" id="main-content">
     <div class="input-container" id="inputContainer">
       <img src="https://raw.githubusercontent.com/vmmvee/jpg/ab12dd59aae5fbc56d8a513027ed9a8b4a58242d/Picsart_25-04-25_01-59-17-380.png" alt="Eye" class="logo" id="eyeLogo"/>
+      <img src="https://raw.githubusercontent.com/vmmvee/jpg/refs/heads/main/Picsart_25-04-25_02-15-17-336.png" alt="Under Logo Image" class="under-logo-img"/>
       <button class="secret-button" onclick="handleMiddleClick()"></button>
       <button class="right-wing-button" onclick="handleRightClick()"></button>
       <button class="left-wing-button" onclick="handleLeftClick()"></button>
+      <button class="center-button-1" onclick="handleMiddleClick()"></button>
+      <button class="center-button-2" onclick="handleMiddleClick()"></button>
     </div>
     <div class="black-overlay" id="blackOverlay"></div>
   </div>
@@ -195,7 +239,7 @@
     };
 
     let clickStage = 0;
-    let middleClicks = 0;
+    let eyeClickCount = 0;
 
     function handleRightClick() {
       if (clickStage === 0) {
@@ -215,8 +259,8 @@
 
     function handleMiddleClick() {
       if (clickStage === 2) {
-        middleClicks++;
-        if (middleClicks === 4) {
+        eyeClickCount++;
+        if (eyeClickCount >= 20) {
           zoomIntoEye();
         }
       } else {
@@ -226,7 +270,7 @@
 
     function reset() {
       clickStage = 0;
-      middleClicks = 0;
+      eyeClickCount = 0;
     }
 
     function startSite() {
